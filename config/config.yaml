@@ -1,0 +1,68 @@
+# Strategy Parameters
+strategy:
+  ema_pairs:
+    - [9, 21]   # Fast EMA, Slow EMA
+    - [9, 26]
+    - [13, 34]
+    - [21, 55]
+
+  # Trading Mode Settings
+  trading:
+    mode:
+      - SWING  # Primary mode (first in list is default)
+      - BUY
+      - SELL
+
+  # Heikin Ashi Pattern Settings
+  ha_patterns:
+    confirmation_candles:
+      - 2  # 2-candle confirmation pattern
+      - 3  # 3-candle confirmation pattern
+      - "None"  # Use basic Heikin Ashi conditions without additional consecutive candle pattern filtering
+
+  trading_session:
+    market_open: "09:15"    # Market opens
+    market_entry: "09:30"   # Market entry time (after market open) for new trades
+    force_exit: "15:15"     # Force exit all positions & no new entries
+    market_close: "15:30"   # Market closes
+
+# Risk Management Parameters
+risk_management:
+  use_stop_loss: true       # Enable stop loss
+  stop_loss_pct: 1.0        # Stop loss percentage
+  use_trailing_stop: true   # Enable trailing stop
+  trailing_stop_pct: 0.5    # Trailing stop percentage
+  max_trades_per_day: 5     # Maximum number of trades per day (planned feature)
+  max_risk_per_trade: 2.0   # Maximum risk per trade as percentage of capital (planned feature)
+
+# Backtesting Parameters
+backtest:
+  initial_capital: 25000
+  position_size: 1.0
+  commission_pct: 0.05      # Commission percentage per trade
+  slippage_pct: 0.02        # Slippage percentage per trade
+
+# Data Settings
+data:
+  timeframe: "1min"
+  data_folder: "data/market_data"
+  results_folder: "data/results"
+  reports_folder: "data/reports"
+  symbol: "NIFTY"
+
+# Logging Settings
+logging:
+  level: "INFO"             # Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+  log_to_file: true         # Whether to log to file
+  log_trades: true          # Whether to log individual trades
+
+# Execution Settings
+execution:
+  mode: "standard"          # standard, deterministic, sequential, validate, cross-validate
+  seed: 42                  # Random seed for reproducibility
+  health_port: 8080         # Port for health check server
+
+# Report Settings
+report:
+  default_start_date: "2015-01-09 09:15:00"  # Default start date for reports when actual data not available
+  default_end_date: "2024-01-25 15:29:00"    # Default end date for reports when actual data not available

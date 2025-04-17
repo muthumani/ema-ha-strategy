@@ -1,0 +1,56 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+venv/
+.venv/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Project specific
+logs/
+data/market_data/*
+data/results/*
+!data/market_data/.gitkeep
+!data/results/.gitkeep
+
+# Pytest
+.pytest_cache/
+.coverage
+htmlcov/
+test_*.py
+tests/
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+*.ipynb
+
+# Development files
+requirements-dev.txt
+.github/
+docs/

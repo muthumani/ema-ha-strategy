@@ -1,0 +1,149 @@
+[
+    {
+        "combination": "EMA 9/21 with BUY mode and None pattern",
+        "metric": "total_trades",
+        "sequential": 3539,
+        "parallel": 3310,
+        "difference": 229
+    },
+    {
+        "combination": "EMA 9/21 with BUY mode and None pattern",
+        "metric": "win_rate",
+        "sequential": 0.44051992088160496,
+        "parallel": 0.44652567975830815,
+        "difference": 0.006005758876703182
+    },
+    {
+        "combination": "EMA 9/21 with BUY mode and None pattern",
+        "metric": "profit_factor",
+        "sequential": 0.9498509005756279,
+        "parallel": 0.9795715458436295,
+        "difference": 0.029720645268001555
+    },
+    {
+        "combination": "EMA 9/21 with BUY mode and None pattern",
+        "metric": "total_profit",
+        "sequential": -6342.623077779586,
+        "parallel": -2564.397414076364,
+        "difference": 3778.2256637032224
+    },
+    {
+        "combination": "EMA 9/21 with BUY mode and None pattern",
+        "metric": "return_pct",
+        "sequential": -25.370492311118348,
+        "parallel": -10.257589656305456,
+        "difference": 15.112902654812892
+    },
+    {
+        "combination": "EMA 9/21 with BUY mode and None pattern",
+        "metric": "max_drawdown_pct",
+        "sequential": 38.71324130104454,
+        "parallel": 35.14769988771737,
+        "difference": 3.5655414133271677
+    },
+    {
+        "combination": "EMA 9/21 with BUY mode and None pattern",
+        "metric": "sharpe_ratio",
+        "sequential": -0.10798341511074698,
+        "parallel": -0.032181393039974034,
+        "difference": 0.07580202207077294
+    },
+    {
+        "combination": "EMA 13/34 with BUY mode and None pattern",
+        "metric": "total_trades",
+        "sequential": 3180,
+        "parallel": 2958,
+        "difference": 222
+    },
+    {
+        "combination": "EMA 13/34 with BUY mode and None pattern",
+        "metric": "win_rate",
+        "sequential": 0.44245283018867926,
+        "parallel": 0.4469235970250169,
+        "difference": 0.004470766836337625
+    },
+    {
+        "combination": "EMA 13/34 with BUY mode and None pattern",
+        "metric": "profit_factor",
+        "sequential": 0.9435600438279912,
+        "parallel": 0.9422523534318668,
+        "difference": 0.001307690396124439
+    },
+    {
+        "combination": "EMA 13/34 with BUY mode and None pattern",
+        "metric": "total_profit",
+        "sequential": -6161.724999392336,
+        "parallel": -5919.07533020552,
+        "difference": 242.64966918681603
+    },
+    {
+        "combination": "EMA 13/34 with BUY mode and None pattern",
+        "metric": "return_pct",
+        "sequential": -24.646899997569342,
+        "parallel": -23.67630132082208,
+        "difference": 0.9705986767472616
+    },
+    {
+        "combination": "EMA 13/34 with BUY mode and None pattern",
+        "metric": "max_drawdown_pct",
+        "sequential": 39.59971082383353,
+        "parallel": 33.76795485505567,
+        "difference": 5.831755968777863
+    },
+    {
+        "combination": "EMA 13/34 with BUY mode and None pattern",
+        "metric": "sharpe_ratio",
+        "sequential": -0.11493853049537059,
+        "parallel": -0.12208085529279072,
+        "difference": 0.007142324797420135
+    },
+    {
+        "combination": "EMA 21/55 with BUY mode and None pattern",
+        "metric": "total_trades",
+        "sequential": 2673,
+        "parallel": 2393,
+        "difference": 280
+    },
+    {
+        "combination": "EMA 21/55 with BUY mode and None pattern",
+        "metric": "win_rate",
+        "sequential": 0.45267489711934156,
+        "parallel": 0.45173422482239867,
+        "difference": 0.0009406722969428905
+    },
+    {
+        "combination": "EMA 21/55 with BUY mode and None pattern",
+        "metric": "profit_factor",
+        "sequential": 0.9712786948256498,
+        "parallel": 0.9722094155142187,
+        "difference": 0.0009307206885689201
+    },
+    {
+        "combination": "EMA 21/55 with BUY mode and None pattern",
+        "metric": "total_profit",
+        "sequential": -2770.353487916076,
+        "parallel": -2342.8733209409,
+        "difference": 427.48016697517596
+    },
+    {
+        "combination": "EMA 21/55 with BUY mode and None pattern",
+        "metric": "return_pct",
+        "sequential": -11.081413951664304,
+        "parallel": -9.3714932837636,
+        "difference": 1.709920667900704
+    },
+    {
+        "combination": "EMA 21/55 with BUY mode and None pattern",
+        "metric": "max_drawdown_pct",
+        "sequential": 27.204904801812052,
+        "parallel": 27.317942953507064,
+        "difference": 0.11303815169501163
+    },
+    {
+        "combination": "EMA 21/55 with BUY mode and None pattern",
+        "metric": "sharpe_ratio",
+        "sequential": -0.03849598261727016,
+        "parallel": -0.037567125340289664,
+        "difference": 0.0009288572769804923
+    }
+]

@@ -1,0 +1,88 @@
+ema_ha_strategy/
+├── .github/               # GitHub specific files
+│   ├── ISSUE_TEMPLATE/    # Issue templates
+│   │   ├── bug_report.md  # Bug report template
+│   │   └── feature_request.md # Feature request template
+│   ├── workflows/         # GitHub Actions workflows
+│   │   └── ci.yml         # CI workflow
+│   └── PULL_REQUEST_TEMPLATE.md # Pull request template
+│
+├── config/                # Configuration files
+│   └── config.yaml        # Default configuration
+│
+├── data/                  # Data directory
+│   ├── market_data/       # Store your market data files here
+│   ├── results/           # Backtest results will be saved here
+│   └── reports/           # Excel reports will be saved here
+│
+├── docs/                  # Documentation
+│   ├── api/               # API documentation
+│   │   └── README.md      # API documentation index
+│   ├── user_guide/        # User guide
+│   │   ├── getting_started.md # Getting started guide
+│   │   ├── configuration.md # Configuration guide
+│   │   └── README.md      # User guide index
+│   ├── development/       # Development guide
+│   │   └── README.md      # Development guide index
+│   └── README.md          # Documentation index
+│
+├── logs/                  # Log files
+│
+├── patterns/              # Pattern recognition (deprecated, for backward compatibility)
+│   ├── __init__.py        # Imports from utils.patterns
+│   ├── ha_patterns.py     # Imports from utils.patterns
+│   └── README.md          # Documentation for deprecated module
+│
+├── strategies/            # Trading strategies
+│   ├── __init__.py
+│   ├── ema_ha.py          # EMA Heikin Ashi strategy
+│   └── README.md          # Documentation for strategies package
+│
+├── tests/                 # Test suite
+│   ├── integration/       # Integration tests
+│   │   ├── __init__.py
+│   │   └── test_integration.py
+│   ├── unit/              # Unit tests
+│   │   ├── __init__.py
+│   │   ├── test_config_validator.py
+│   │   ├── test_ema_ha_strategy.py
+│   │   └── test_utils.py
+│   ├── __init__.py
+│   ├── test_config_validator.py
+│   ├── test_ema_ha.py
+│   ├── test_ema_ha_strategy.py
+│   ├── test_excel_report.py
+│   ├── test_integration.py
+│   ├── test_patterns.py
+│   ├── test_utils.py
+│   └── README.md          # Documentation for tests
+│
+├── utils/                 # Utility modules
+│   ├── __init__.py        # Common utility functions
+│   ├── config_validator.py # Configuration validation
+│   ├── excel_report.py    # Excel report generation
+│   ├── patterns.py        # Pattern recognition (new location)
+│   └── README.md          # Documentation for utils package
+│
+├── backtest.py            # Backtesting module
+├── backtest_utils.py      # Backtesting utilities
+├── CHANGELOG.md           # Changelog
+├── CONTRIBUTING.md        # Contribution guidelines
+├── cross_validate.py      # Cross-validation module
+├── deterministic_backtest.py # Deterministic backtesting
+├── docker-compose.yml     # Docker Compose configuration
+├── Dockerfile             # Docker configuration
+├── health_check.py        # Health check server
+├── LICENSE                # License file
+├── logger.py              # Logging configuration
+├── main.py                # Main entry point
+├── project_structure.txt  # Project structure documentation
+├── pytest.ini             # PyTest configuration
+├── quick_validate.py      # Quick validation module
+├── README.md              # Project documentation
+├── requirements.txt       # Project dependencies
+├── requirements-dev.txt   # Development dependencies
+├── setup.py               # Package setup script
+├── utils.py               # Legacy utility functions
+├── validate_results.py    # Results validation
+└── version.py             # Version information

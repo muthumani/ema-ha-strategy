@@ -1,0 +1,25 @@
+{
+    "ema_short": 13,
+    "ema_long": 34,
+    "trading_mode": "BUY",
+    "pattern_length": "None",
+    "total_trades": 3180,
+    "winning_trades": 1407,
+    "win_rate": 0.44245283018867926,
+    "profit_factor": 0.9435600438279912,
+    "total_profit": -6161.724999392336,
+    "final_capital": 18838.275000607664,
+    "return_pct": -24.646899997569342,
+    "max_drawdown_pct": 39.59971082383353,
+    "monthly_returns_avg": -0.23789025949100762,
+    "monthly_returns_std": 2.0697172520453373,
+    "profitable_months": 49.0,
+    "max_monthly_profit": 5.800287618397653,
+    "max_monthly_loss": -5.849152670476008,
+    "exit_reasons": {
+        "TrailingStop": 1353,
+        "ForceExit": 1783,
+        "StopLoss": 44
+    },
+    "sharpe_ratio": -0.11493853049537059
+}
