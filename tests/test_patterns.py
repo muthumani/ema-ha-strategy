@@ -15,7 +15,8 @@ import os
 # Add the project root directory to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from utils.patterns import detect_consecutive_candles, apply_ha_pattern_filter
+import patterns.patterns
+from patterns.patterns import detect_consecutive_candles, apply_ha_pattern_filter
 
 def create_sample_data():
     """Create sample data for testing"""
@@ -87,6 +88,13 @@ def test_detect_consecutive_candles():
     with pytest.raises(ValueError):
         detect_consecutive_candles(data, 'bullish', 4)
 
+    # Test error handling with missing columns
+    data_missing_columns = data.drop(columns=['HA_Open', 'HA_Close'])
+    result = detect_consecutive_candles(data_missing_columns, 'bullish', 2)
+    assert isinstance(result, pd.Series)
+    assert len(result) == len(data_missing_columns)
+    assert not result.any()  # All values should be False
+
 def test_apply_ha_pattern_filter():
     """Test applying Heikin Ashi pattern filter"""
     # Create sample data
@@ -134,3 +142,64 @@ def test_apply_ha_pattern_filter():
     # Test with invalid candle pattern
     with pytest.raises(ValueError):
         apply_ha_pattern_filter(data, config, candle_pattern=4)
+
+    # Test with empty confirmation candles
+    config_empty = {
+        'strategy': {
+            'ha_patterns': {
+                'enabled': True,
+                'confirmation_candles': []
+            }
+        }
+    }
+    filtered_data_empty = apply_ha_pattern_filter(data, config_empty)
+    assert isinstance(filtered_data_empty, pd.DataFrame)
+    assert filtered_data_empty is data  # Should return the original DataFrame
+
+    # Test with missing ha_patterns in config
+    config_missing = {
+        'strategy': {}
+    }
+    filtered_data_missing = apply_ha_pattern_filter(data, config_missing)
+    assert isinstance(filtered_data_missing, pd.DataFrame)
+    assert filtered_data_missing is data  # Should return the original DataFrame
+
+    # Test error handling with missing columns
+    data_missing_columns = data.drop(columns=['HA_Open', 'HA_Close'])
+    result = apply_ha_pattern_filter(data_missing_columns, config)
+    assert isinstance(result, pd.DataFrame)
+
+    # Test error handling with invalid candle pattern exception propagation
+    # Create a mock function that raises a ValueError with the specific message
+    def mock_detect_consecutive_candles_value_error(df, pattern_type, length):
+        raise ValueError("Invalid candle pattern length: 4. Must be 2, 3, or None.")
+
+    # Save the original function
+    original_detect = patterns.patterns.detect_consecutive_candles
+
+    try:
+        # Replace the function with our mock
+        patterns.patterns.detect_consecutive_candles = mock_detect_consecutive_candles_value_error
+
+        # This should re-raise the ValueError
+        with pytest.raises(ValueError, match="Invalid candle pattern length"):
+            apply_ha_pattern_filter(data, config)
+    finally:
+        # Restore the original function
+        patterns.patterns.detect_consecutive_candles = original_detect
+
+    # Test error handling with other exceptions
+    # Create a mock function that raises a different exception
+    def mock_detect_consecutive_candles_other_error(df, pattern_type, length):
+        raise KeyError("Some other error")
+
+    try:
+        # Replace the function with our mock
+        patterns.patterns.detect_consecutive_candles = mock_detect_consecutive_candles_other_error
+
+        # This should catch the exception and return the original DataFrame
+        result = apply_ha_pattern_filter(data, config)
+        assert result is data  # Should return the original DataFrame
+    finally:
+        # Restore the original function
+        patterns.patterns.detect_consecutive_candles = original_detect

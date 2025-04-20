@@ -1,19 +1,24 @@
-# Patterns Package (Deprecated)
+# Patterns Package
 
 This package contains pattern recognition modules for trading strategies.
 
 ## Modules
 
-### ha_patterns.py (Deprecated)
+### patterns.py
 
-This module has been moved to `utils/patterns.py`. This version is maintained for backward compatibility but imports from the new location.
+This module provides functions to identify various Heikin Ashi candlestick patterns that can be used as confirmation signals in trading strategies.
 
-It's recommended to update your imports to use the new module:
+#### Functions
+
+- `detect_consecutive_candles(df, pattern_type, length)`: Detects consecutive bullish or bearish Heikin Ashi candles.
+- `apply_ha_pattern_filter(df, config, candle_pattern)`: Applies Heikin Ashi pattern filters to the DataFrame based on configuration.
+
+#### Usage
 
 ```python
-# Old import (deprecated)
-from patterns.ha_patterns import apply_ha_pattern_filter
+from patterns.patterns import apply_ha_pattern_filter
 
-# New import (recommended)
-from utils.patterns import apply_ha_pattern_filter
+# Apply pattern filter to DataFrame
+df = apply_ha_pattern_filter(df, config, candle_pattern=2)
 ```
+

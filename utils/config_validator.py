@@ -9,7 +9,7 @@ import jsonschema
 from jsonschema import validate
 from pathlib import Path
 
-from logger import setup_logger
+from utils.logger import setup_logger
 
 # Set up logger
 logger = setup_logger(name="config_validator", log_level=logging.INFO)
@@ -115,7 +115,7 @@ def validate_config_file(config_path: Union[str, Path]) -> bool:
     Returns:
         True if the configuration is valid, False otherwise
     """
-    from backtest_utils import load_config
+    from backtest.utils import load_config
 
     try:
         config = load_config(config_path)

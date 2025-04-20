@@ -13,7 +13,7 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from strategies.ema_ha import EMAHeikinAshiStrategy
-from backtest_utils import load_config
+from backtest.utils import load_config
 
 # Create a fixture for test data
 @pytest.fixture

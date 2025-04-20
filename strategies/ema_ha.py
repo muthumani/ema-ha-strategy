@@ -2,8 +2,8 @@ from typing import Dict, Tuple, List, Any, Optional, Union
 import pandas as pd
 import numpy as np
 import logging
-from logger import setup_logger
-from utils.patterns import apply_ha_pattern_filter
+from utils.logger import setup_logger
+from patterns.patterns import apply_ha_pattern_filter
 
 # Set up logger
 logger = setup_logger(name="ema_ha_strategy", log_level=logging.INFO)
@@ -18,7 +18,7 @@ def try_format_timestamp(timestamp):
         return str(timestamp)
 
 class EMAHeikinAshiStrategy:
-    def __init__(self, ema_short: int, ema_long: int, config: Dict[str, Any] = None):
+    def __init__(self, ema_short: int, ema_long: int, config: Dict[str, Any] = None, seed: int = None, deterministic: bool = False):
         """
         Initialize strategy with EMA periods and configuration
 
@@ -26,6 +26,8 @@ class EMAHeikinAshiStrategy:
             ema_short: Short EMA period
             ema_long: Long EMA period
             config: Strategy configuration
+            seed: Random seed for reproducibility
+            deterministic: Whether to use deterministic execution mode
 
         Raises:
             ValueError: If configuration is invalid or missing required settings
@@ -36,6 +38,52 @@ class EMAHeikinAshiStrategy:
         self.ema_short = ema_short
         self.ema_long = ema_long
         self.config = config or {}
+        self.deterministic = deterministic
+
+        # Store the seed for deterministic behavior
+        self.seed = seed
+
+        # Create a deterministic random state
+        if deterministic and seed is not None:
+            # For deterministic mode, create a fixed random state based on parameters
+            # This ensures consistent results regardless of execution context
+            import random
+            # Create a unique seed based on strategy parameters
+            unique_seed = seed + (ema_short * 1000) + (ema_long * 10)
+
+            # Get trading mode for more unique seed
+            trading_config = self.config.get('strategy', {}).get('trading', {})
+            trading_mode = trading_config.get('mode', ['SWING'])
+            if isinstance(trading_mode, list) and len(trading_mode) > 0:
+                mode = trading_mode[0].upper()
+                if mode == 'BUY':
+                    unique_seed += 1
+                elif mode == 'SELL':
+                    unique_seed += 2
+                # SWING mode doesn't modify the seed
+
+            # Get pattern info for even more unique seed
+            ha_patterns = self.config.get('strategy', {}).get('ha_patterns', {})
+            confirmation_candles = ha_patterns.get('confirmation_candles', [])
+            if len(confirmation_candles) == 1:
+                if confirmation_candles[0] is None:
+                    unique_seed += 100  # None pattern
+                elif confirmation_candles[0] == 2:
+                    unique_seed += 200  # 2-candle pattern
+                elif confirmation_candles[0] == 3:
+                    unique_seed += 300  # 3-candle pattern
+
+            # Set the seeds
+            random.seed(unique_seed)
+            np.random.seed(unique_seed)
+            self.random_state = np.random.RandomState(unique_seed)
+            logger.info(f"Initialized deterministic mode with seed {unique_seed}")
+        elif seed is not None:
+            # For non-deterministic mode, just use the provided seed
+            import random
+            random.seed(seed)
+            np.random.seed(seed)
+            self.random_state = np.random.RandomState(seed)
 
         # Validate config
         if not config or 'strategy' not in config or 'trading_session' not in config['strategy']:
@@ -193,6 +241,21 @@ class EMAHeikinAshiStrategy:
             Tuple of (results_dict, trades_list)
         """
         try:
+            import random
+
+            # In deterministic mode, we've already set up the random state in __init__
+            # Just ensure it's being used consistently throughout the backtest
+            if self.deterministic and hasattr(self, 'random_state'):
+                # Use the deterministic random state for any random operations
+                # This ensures consistent results regardless of execution context
+                random_state = self.random_state
+                # Don't try to set the random state directly, just use the seed
+                logger.info(f"Using deterministic random state for backtest")
+            elif hasattr(self, 'seed') and self.seed is not None:
+                # For non-deterministic mode with seed, just use the seed
+                random.seed(self.seed)
+                np.random.seed(self.seed)
+
             # Generate signals
             df = self.generate_signals(df)
 

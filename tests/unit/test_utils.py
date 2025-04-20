@@ -16,7 +16,7 @@ import sys
 # Add parent directory to path to import modules
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from backtest_utils import load_config, load_data, save_results, calculate_performance_metrics
+from backtest.utils import load_config, load_data, save_results, calculate_performance_metrics
 
 def test_load_config():
     """Test loading configuration from a YAML file"""

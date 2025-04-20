@@ -49,22 +49,16 @@ from utils.excel_report import create_consolidated_report
 create_consolidated_report(results, trades, config)
 ```
 
-### patterns.py
+### patterns.py (Deprecated)
 
-This module provides functions to identify various Heikin Ashi candlestick patterns that can be used as confirmation signals in trading strategies.
+This module is maintained for backward compatibility and imports from `patterns.patterns`.
 
-The module replaces the functionality previously found in `patterns/ha_patterns.py`. The old module is still available for backward compatibility but imports from this new module.
-
-#### Functions
-
-- `detect_consecutive_candles(df, pattern_type, length)`: Detects consecutive bullish or bearish Heikin Ashi candles.
-- `apply_ha_pattern_filter(df, config, candle_pattern)`: Applies Heikin Ashi pattern filters to the DataFrame based on configuration.
-
-#### Usage
+The functionality has been moved to `patterns/patterns.py`. It's recommended to update your imports to use the new module:
 
 ```python
+# Old import (deprecated)
 from utils.patterns import apply_ha_pattern_filter
 
-# Apply pattern filter to DataFrame
-df = apply_ha_pattern_filter(df, config, candle_pattern=2)
+# New import (recommended)
+from patterns.patterns import apply_ha_pattern_filter
 ```

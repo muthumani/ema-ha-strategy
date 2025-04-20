@@ -67,7 +67,7 @@ The utility functions are implemented in the `utils` package.
 from backtest_utils import load_config, load_data, save_results
 from utils.config_validator import validate_config
 from utils.excel_report import create_consolidated_report
-from utils.patterns import apply_ha_pattern_filter
+from patterns.patterns import apply_ha_pattern_filter
 
 # Load configuration
 config = load_config('config/config.yaml')
@@ -76,10 +76,10 @@ config = load_config('config/config.yaml')
 if validate_config(config):
     # Load data
     data = load_data('data/market_data/NIFTY_1min.csv')
-    
+
     # Apply pattern filter
     filtered_data = apply_ha_pattern_filter(data, config)
-    
+
     # Create report
     create_consolidated_report(results, trades, config)
 ```

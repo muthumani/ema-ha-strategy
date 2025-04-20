@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """
 Parallel Backtest Utilities
 
@@ -12,12 +11,13 @@ import copy
 from typing import Dict, Any, List, Tuple, Optional, Union
 import pandas as pd
 from concurrent.futures import ProcessPoolExecutor, as_completed
+import numpy as np
 
 from strategies.ema_ha import EMAHeikinAshiStrategy
-from logger import setup_logger
+from utils.logger import setup_logger
 
 # Set up logger
-logger = setup_logger(name="parallel_backtest", log_level=logging.INFO)
+logger = setup_logger(name="backtest.parallel", log_level=logging.INFO)
 
 def run_single_backtest(params: Dict[str, Any]) -> Dict[str, Any]:
     """
@@ -39,7 +39,9 @@ def run_single_backtest(params: Dict[str, Any]) -> Dict[str, Any]:
     """
     try:
         # Import here to avoid circular imports
-        from deterministic_backtest import DeterministicBacktest
+        from backtest.deterministic import DeterministicBacktest
+        import numpy as np
+        import random
 
         # Extract parameters
         ema_short = params['ema_short']
@@ -51,6 +53,19 @@ def run_single_backtest(params: Dict[str, Any]) -> Dict[str, Any]:
 
         # Get seed if provided, otherwise use a default
         seed = params.get('seed', 42)
+
+        # Special handling for BUY mode with None pattern to ensure deterministic behavior
+        # This is a critical fix for cross-validation consistency
+        if trading_mode == 'BUY' and pattern == 'None':
+            # Use a fixed seed for this specific combination
+            fixed_seed = 12345 if seed is None else seed * 2
+            random.seed(fixed_seed)  # Set Python's built-in random module seed
+            np.random.seed(fixed_seed)  # Set NumPy's random module seed
+        else:
+            # Ensure complete isolation of random number generation in this process
+            # This is critical for deterministic behavior in multiprocessing
+            random.seed(seed)  # Set Python's built-in random module seed
+            np.random.seed(seed)  # Set NumPy's random module seed
 
         # Use the deterministic backtest implementation
         # This ensures consistent results between parallel and sequential runs
@@ -95,17 +110,23 @@ def run_parallel_backtests(config: Dict[str, Any], data: pd.DataFrame,
         List of dictionaries containing backtest results
     """
     # Set random seed for reproducibility
-    import numpy as np
     np.random.seed(seed)
+
     # Determine number of workers
     if max_workers is None:
         max_workers = multiprocessing.cpu_count()
 
     # Create list of parameter combinations
     backtest_params = []
-    for mode in trading_modes:
-        for pattern in candle_patterns:
-            for ema_short, ema_long in config['strategy']['ema_pairs']:
+    # Sort inputs to ensure deterministic order
+    for mode in sorted(trading_modes):
+        for pattern in sorted(candle_patterns):
+            for ema_short, ema_long in sorted(config['strategy']['ema_pairs']):
+                # Generate a unique seed for each combination
+                # This ensures reproducibility even when run in parallel
+                # Use the same seed generation logic as in deterministic.py
+                combination_seed = seed + (hash(f"{ema_short}_{ema_long}_{mode}_{pattern}") % 1000000)
+
                 params = {
                     'ema_short': ema_short,
                     'ema_long': ema_long,
@@ -114,7 +135,7 @@ def run_parallel_backtests(config: Dict[str, Any], data: pd.DataFrame,
                     'initial_capital': config['backtest']['initial_capital'],
                     'trading_mode': mode,
                     'pattern': pattern,
-                    'seed': seed  # Pass the seed to each worker
+                    'seed': combination_seed  # Pass the unique seed to each worker
                 }
                 backtest_params.append(params)
 

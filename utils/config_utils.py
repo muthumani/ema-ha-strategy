@@ -7,9 +7,9 @@ This module provides functions to access configuration values with fallbacks to 
 import logging
 from typing import Any, Dict, List, Union, Optional
 from pathlib import Path
-import constants
-from backtest_utils import load_config
-from logger import setup_logger
+from utils import constants
+from backtest.utils import load_config
+from utils.logger import setup_logger
 
 # Set up logger
 logger = setup_logger(name="config_utils", log_level=logging.INFO)

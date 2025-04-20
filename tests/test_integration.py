@@ -13,7 +13,7 @@ import json
 from pathlib import Path
 
 from strategies.ema_ha import EMAHeikinAshiStrategy
-from backtest_utils import load_config, load_data, save_results
+from backtest.utils import load_config, load_data, save_results
 from utils.config_validator import validate_config
 
 # Create sample data for testing

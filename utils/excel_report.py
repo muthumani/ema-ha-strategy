@@ -11,7 +11,7 @@ from typing import Dict, Any, List, Tuple
 import os
 import logging
 from datetime import datetime
-from logger import setup_logger
+from utils.logger import setup_logger
 from utils.config_utils import get_config_value, get_backtest_date_range, get_symbol, get_market_session_times, get_risk_management, get_initial_capital
 
 # Set up logger
@@ -32,6 +32,26 @@ def create_consolidated_report(all_results: List[Dict[str, Any]],
         Path to the generated Excel file
     """
     try:
+        # Validate results to ensure they have all required keys
+        valid_results = []
+        required_keys = ['ema_short', 'ema_long', 'trading_mode', 'pattern_length', 'total_trades',
+                        'win_rate', 'profit_factor', 'total_profit', 'return_pct', 'max_drawdown_pct']
+
+        for result in all_results:
+            if all(key in result for key in required_keys):
+                valid_results.append(result)
+            else:
+                missing_keys = [key for key in required_keys if key not in result]
+                logger.warning(f"Skipping result with missing keys: {missing_keys}. Result: {result}")
+
+        # If no valid results, log warning and return
+        if not valid_results:
+            logger.warning("No valid results found for Excel report generation")
+            return output_file if output_file else "No report generated"
+
+        # Use valid results for report generation
+        all_results = valid_results
+
         # Create a pandas Excel writer
         if not output_file:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")

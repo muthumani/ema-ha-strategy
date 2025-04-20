@@ -69,8 +69,19 @@ venv.bak/
 logs/
 data/market_data/*
 data/results/*
+data/reports/*.xlsx
+data/test_results/*
 !data/market_data/.gitkeep
 !data/results/.gitkeep
+!data/reports/.gitkeep
+!data/test_results/.gitkeep
+
+# Temporary files created during development
+github_*
+
+# Acceptance testing reports
+acceptance_testing/reports/*
+!acceptance_testing/reports/.gitkeep
 
 # Backup files
 backup_*/

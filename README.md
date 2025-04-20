@@ -1,225 +1,110 @@
 # EMA Heikin Ashi Strategy
 
-A production-ready implementation of the EMA Heikin Ashi trading strategy for NIFTY Index 50.
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/YOUR_USERNAME/ema-ha-strategy)
+![GitHub](https://img.shields.io/github/license/YOUR_USERNAME/ema-ha-strategy)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/YOUR_USERNAME/ema-ha-strategy/Python%20Tests)
+![Code Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+A comprehensive backtesting and trading system for the EMA Heikin Ashi strategy, designed for NIFTY Index 50 options trading.
 
-## Version
+## Features
 
-Current version: 1.0.0
-
-## Overview
-
-This project implements a trading strategy based on Exponential Moving Average (EMA) crossovers combined with Heikin Ashi candles. The strategy is designed for intraday trading on the NIFTY Index 50.
-
-### Key Features
-
-- **EMA Crossover**: Uses EMA crossovers to identify trend changes
-- **Heikin Ashi Candles**: Uses Heikin Ashi candles to filter out market noise
-- **Risk Management**: Implements stop loss and trailing stop mechanisms
-- **Performance Metrics**: Calculates comprehensive performance metrics
-- **Excel Reporting**: Generates detailed Excel reports with performance metrics
 - **Multiple Trading Modes**: Support for BUY, SELL, and SWING (both) trading modes
-- **Comparative Analysis**: Compare performance across different configurations
-- **Configuration Validation**: Validates configuration files against a schema
-- **Type Hints**: Comprehensive type annotations for better code quality
-- **Test Suite**: Includes unit tests and integration tests for core components
-- **Cross-Validation**: Supports deterministic and sequential execution modes for result validation
-- **Parallel Processing**: Utilizes multi-core processing for faster backtesting
-- **Docker Support**: Containerized deployment with Docker and Docker Compose
-- **Health Check Server**: Built-in health monitoring for production deployments
+- **Heikin Ashi Pattern Recognition**: Configurable pattern detection with 2-candle, 3-candle, or no pattern options
+- **EMA Crossover Strategy**: Implements the EMA Heikin Ashi strategy with configurable EMA pairs
+- **Comprehensive Backtesting**: Robust backtesting engine with detailed performance metrics
+- **Parallel Processing**: High-performance parallel backtesting with deterministic mode for reproducibility
+- **Cross-Validation**: Ensures consistent results between sequential and parallel execution modes
+- **Excel Reporting**: Generates detailed Excel reports with performance metrics and visualizations
+- **Acceptance Testing**: Comprehensive acceptance testing framework for production validation
+
+## Performance Highlights
+
+- **Best Performing Combination**:
+  - EMA Pair: 13/34
+  - Trading Mode: SWING
+  - Candle Pattern: None
+  - Total Trades: 22,327
+  - Win Rate: 30.59%
+  - Profit Factor: 1.13
+  - Total Profit: Rs.127,092.56
+  - Return: 508.37%
+  - Max Drawdown: 10.75%
+  - Sharpe Ratio: 0.64
 
 ## Installation
 
-### Standard Installation
+### Using Command Line
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/ema-ha-strategy.git
+git clone https://github.com/YOUR_USERNAME/ema-ha-strategy.git
 cd ema-ha-strategy
-
-# Create and activate virtual environment
-python -m venv venv
-.\venv\Scripts\activate  # Windows
-source venv/bin/activate  # Linux/Mac
 
 # Install dependencies
 pip install -r requirements.txt
 ```
 
-### Docker Installation
+### Using Windows Batch File
+
+For Windows users, a setup batch file is provided for easy installation:
+
+1. Clone the repository
+2. Navigate to the repository directory
+3. Double-click `setup.bat` or run it from the command prompt
+
+The setup script will create a virtual environment, install all dependencies, and set up the necessary directories.
+
+## Quick Start
+
+### Using Command Line
 
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/ema-ha-strategy.git
-cd ema-ha-strategy
+# Run a single backtest with default settings
+python main.py
 
-# Build and run with Docker Compose
-docker-compose up -d
+# Run with specific trading mode
+python main.py --mode BUY
 
-# View logs
-docker-compose logs -f
+# Run with specific candle pattern
+python main.py --pattern 2
+
+# Compare all trading modes
+python main.py --compare modes
+
+# Run all combinations and generate a report
+python main.py --all --report
 ```
 
-### Development Installation
+### Using Windows Batch File
 
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/ema-ha-strategy.git
-cd ema-ha-strategy
+For Windows users, a run batch file is provided for easy execution:
 
-# Create and activate virtual environment
-python -m venv venv
-.\venv\Scripts\activate  # Windows
-source venv/bin/activate  # Linux/Mac
+1. Ensure you have completed the installation steps
+2. Double-click `run.bat` or run it from the command prompt
+3. To pass command-line arguments, run from command prompt: `run.bat --mode BUY`
 
-# Install in development mode
-pip install -e .
-
-# Install development dependencies
-pip install -r requirements-dev.txt
-```
-
-## Usage
-
-### Basic Usage
-
-```bash
-python main.py --config config/config.yaml --symbol NIFTY
-```
-
-### Running with Different Execution Modes
-
-```bash
-# Standard mode (parallel, non-deterministic)
-python main.py --execution-mode standard
-
-# Deterministic mode (parallel with fixed seed)
-python main.py --execution-mode deterministic --seed 42
-
-# Sequential mode (no parallelization, deterministic)
-python main.py --execution-mode sequential
-
-# Validation mode (quick validation before execution)
-python main.py --execution-mode validate
-
-# Cross-validation mode (full cross-validation)
-python main.py --execution-mode cross-validate
-```
-
-### Comparative Analysis
-
-```bash
-# Compare trading modes (BUY, SELL, SWING)
-python main.py --compare
-
-# Compare candle patterns (2-candle, 3-candle, None)
-python main.py --compare-patterns
-
-# Run all combinations of trading modes and candle patterns
-python main.py --all-combinations
-```
-
-### Generating Reports
-
-```bash
-# Generate consolidated Excel report
-python main.py --report
-```
-
-### Docker Usage
-
-```bash
-# Run with default configuration
-docker-compose up
-
-# Run with custom command line arguments
-docker-compose run ema-ha-strategy --execution-mode deterministic --seed 42
-```
-
-### Command Line Arguments
-
-#### Basic Configuration
-- `--config`: Path to configuration file (default: config/config.yaml)
-- `--no-config`: Ignore config file and use only command-line arguments
-
-#### Override Options
-- `--data`: Path to market data file (overrides config)
-- `--symbol`: Trading symbol (default: NIFTY)
-- `--output`: Output directory for results (overrides config)
-- `--debug`: Enable debug logging
-
-#### Strategy Options
-- `--mode`: Trading mode (BUY, SELL, SWING) to override config
-- `--candle-pattern`: Number of consecutive candles required for pattern confirmation (2, 3, or None)
-
-#### Analysis Options
-- `--compare`: Run comparative analysis across all trading modes
-- `--compare-patterns`: Run comparative analysis across all candle patterns
-- `--all-combinations`: Run analysis for all combinations of trading modes and candle patterns
-- `--report`: Generate consolidated Excel report
-
-#### Performance and Validation Options
-- `--execution-mode`: Execution mode for strategy testing (standard, deterministic, sequential, validate, cross-validate)
-- `--seed`: Random seed for reproducibility when using deterministic mode
+The run script will activate the virtual environment, check for required files, and execute the strategy with the specified arguments.
 
 ## Configuration
 
-The strategy is configured using a YAML file. See `config/config.yaml` for an example.
+The system is configured using YAML files. The default configuration file is `config/config.yaml`.
 
 ```yaml
-# Strategy Parameters
+# Example configuration
 strategy:
   ema_pairs:
-    - [9, 21]   # Fast EMA, Slow EMA
+    - [8, 21]
     - [13, 34]
     - [21, 55]
-
   trading:
     mode: ["SWING"]  # Options: "BUY", "SELL", "SWING"
-
   ha_patterns:
     enabled: true
-    confirmation_candles: [2, 3, null]  # Number of consecutive candles required for pattern confirmation
-                                        # null means no pattern filtering (basic Heikin Ashi only)
+    confirmation_candles: [2, 3, null]  # Options: 2, 3, null (no pattern)
 
-  trading_session:
-    market_open: "09:15"    # Market opens
-    market_entry: "09:30"   # Market entry time (after market open) for new trades
-    force_exit: "15:15"     # Force exit all positions & no new entries
-    market_close: "15:30"   # Market closes
-
-# Backtest Parameters
 backtest:
   initial_capital: 25000
-  commission: 0.0
-  slippage: 0.0
-
-# Risk Management Parameters
-risk_management:
-  use_stop_loss: true       # Enable stop loss
-  stop_loss_pct: 1.0        # Stop loss percentage
-  use_trailing_stop: true   # Enable trailing stop
-  trailing_stop_pct: 0.5    # Trailing stop percentage
-  max_trades_per_day: 5     # Maximum number of trades per day (planned feature)
-  max_risk_per_trade: 2.0   # Maximum risk per trade as percentage of capital (planned feature)
-
-# Data Parameters
-data:
-  data_folder: "data/market_data"
-  results_folder: "data/results"
-  timeframe: "1min"
-
-# Logging Parameters
-logging:
-  level: "INFO"  # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
-
-# Execution Settings
-execution:
-  mode: "standard"          # standard, deterministic, sequential, validate, cross-validate
-  seed: 42                  # Random seed for reproducibility
 ```
 
 ## Data Format
@@ -263,89 +148,151 @@ The strategy can generate comprehensive Excel reports with the following sheets:
 - Candle Patterns Comparison: Comparison of different candle pattern configurations
 - All Combinations: Results for all combinations of parameters
 
+## Design Diagrams
+
+The project includes comprehensive design diagrams that illustrate the system architecture, components, and workflows. These diagrams are available in the `designdiagram` folder and can be viewed directly on GitHub.
+
+- [System Architecture](designdiagram/01_system_architecture.md)
+- [Component Diagram](designdiagram/02_component_diagram.md)
+- [System Design](designdiagram/03_system_design.md)
+- [Test Architecture](designdiagram/04_test_architecture.md)
+- [Acceptance Testing Workflow](designdiagram/05_acceptance_testing_workflow.md)
+- [Deployment Architecture](designdiagram/06_deployment_architecture.md)
+- [Data Flow Diagram](designdiagram/07_data_flow.md)
+- [Class Diagram](designdiagram/08_class_diagram.md)
+
 ## Testing
 
-The project includes a comprehensive test suite. To run the tests:
+The project includes a comprehensive testing framework with unit tests, integration tests, and acceptance tests.
 
 ```bash
-pytest
-```
+# Run unit tests
+pytest tests/unit/
 
-To run tests with coverage report:
+# Run integration tests
+pytest tests/integration/
 
-```bash
-pytest --cov=. --cov-report=term-missing
+# Run acceptance tests
+cd acceptance_testing/scripts
+python run_acceptance_tests.py --categories all
 ```
 
 ## Project Structure
 
 ```
 ema_ha_strategy/
+├── .github/               # GitHub configuration
+│   ├── ISSUE_TEMPLATE/     # Issue templates
+│   └── workflows/         # GitHub Actions workflows
+│
+├── acceptance_testing/    # Acceptance testing framework
+│   ├── docs/              # Acceptance testing documentation
+│   ├── reports/           # Acceptance test reports
+│   ├── scripts/           # Acceptance test scripts
+│   │   ├── acceptance_test.bat    # Windows batch file for acceptance tests
+│   │   ├── generate_test_data.py  # Generate synthetic test data
+│   │   ├── monitor_performance.py # Monitor system performance
+│   │   ├── run_acceptance_tests.py # Run acceptance tests
+│   │   ├── smoke_test.bat         # Quick smoke test
+│   │   └── __init__.py            # Package initialization
+│   ├── __init__.py        # Package initialization
+│   ├── main.py            # Main entry point for acceptance testing
+│   └── README.md          # Acceptance testing documentation
+│
+├── backtest/              # Backtesting framework
+│   ├── cross_validate.py  # Cross-validation implementation
+│   ├── deterministic.py   # Deterministic backtesting
+│   ├── parallel.py        # Parallel backtesting
+│   ├── quick_validate.py  # Quick validation
+│   ├── run.py             # Backtest runner
+│   ├── runner.py          # Backtest runner implementation
+│   ├── utils.py           # Backtesting utilities
+│   ├── validate.py        # Validation utilities
+│   └── __init__.py        # Package initialization
+│
 ├── config/                # Configuration files
 │   └── config.yaml        # Default configuration
 │
 ├── data/                  # Data directory
-│   ├── market_data/       # Store your market data files here
-│   ├── results/           # Backtest results will be saved here
-│   └── reports/           # Excel reports will be saved here
+│   ├── market_data/       # Market data files
+│   ├── reports/           # Excel reports
+│   ├── results/           # Backtest results
+│   ├── test_results/      # Test results
+│   └── validation/        # Validation results
+│
+├── designdiagram/         # Design diagrams
+│   ├── 01_system_architecture.md    # System architecture diagram
+│   ├── 02_component_diagram.md      # Component diagram
+│   ├── 03_system_design.md          # System design diagram
+│   ├── 04_test_architecture.md      # Test architecture diagram
+│   ├── 05_acceptance_testing_workflow.md  # Acceptance testing workflow
+│   ├── 06_deployment_architecture.md # Deployment architecture
+│   ├── 07_data_flow.md              # Data flow diagram
+│   ├── 08_class_diagram.md          # Class diagram
+│   └── README.md                    # Design diagrams documentation
 │
 ├── docs/                  # Documentation
 │   ├── api/               # API documentation
+│   ├── development/       # Development guide
 │   ├── user_guide/        # User guide
-│   └── development/       # Development guide
+│   ├── ACCEPTANCE_TESTING_SUMMARY.md # Acceptance testing summary
+│   ├── README.md          # Documentation overview
+│   ├── running_combinations.md      # Guide for running combinations
+│   └── usage_guide.md     # Usage guide
 │
 ├── logs/                  # Log files
 │
-├── patterns/              # Pattern recognition (deprecated, for backward compatibility)
-│   ├── __init__.py        # Imports from utils.patterns
-│   └── ha_patterns.py     # Imports from utils.patterns
+├── patterns/              # Pattern recognition
+│   ├── patterns.py        # Pattern recognition implementation
+│   └── __init__.py        # Package initialization
+│
+├── server/                # Server components
+│   ├── health_check.py    # Health check server
+│   └── __init__.py        # Package initialization
 │
 ├── strategies/            # Trading strategies
-│   ├── __init__.py
-│   └── ema_ha.py          # EMA Heikin Ashi strategy
+│   ├── ema_ha.py          # EMA Heikin Ashi strategy
+│   └── __init__.py        # Package initialization
 │
 ├── tests/                 # Test suite
 │   ├── integration/       # Integration tests
-│   │   ├── __init__.py
-│   │   └── test_integration.py
 │   ├── unit/              # Unit tests
-│   │   ├── __init__.py
-│   │   ├── test_config_validator.py
-│   │   ├── test_ema_ha_strategy.py
-│   │   └── test_utils.py
-│   ├── __init__.py
-│   ├── test_config_validator.py
-│   ├── test_ema_ha.py
-│   ├── test_ema_ha_strategy.py
-│   ├── test_excel_report.py
-│   ├── test_integration.py
-│   ├── test_patterns.py
-│   └── test_utils.py
+│   ├── fixtures.py        # Test fixtures
+│   ├── test_backtest_utils.py    # Tests for backtest utilities
+│   ├── test_config_validator.py  # Tests for config validation
+│   ├── test_cross_validate.py    # Tests for cross-validation
+│   ├── test_deterministic.py     # Tests for deterministic backtest
+│   ├── test_ema_ha.py            # Tests for EMA-HA
+│   ├── test_ema_ha_strategy.py   # Tests for EMA-HA strategy
+│   ├── test_excel_report.py      # Tests for Excel reports
+│   ├── test_integration.py       # Integration tests
+│   ├── test_main.py              # Tests for main module
+│   ├── test_parallel.py          # Tests for parallel execution
+│   ├── test_patterns.py          # Tests for patterns
+│   ├── test_patterns_functions.py # Tests for pattern functions
+│   ├── test_quick_validate.py    # Tests for quick validation
+│   ├── test_run.py               # Tests for run module
+│   ├── test_runner.py            # Tests for runner module
+│   ├── test_utils.py             # Tests for utilities
+│   ├── test_validate.py          # Tests for validation
+│   └── __init__.py               # Package initialization
 │
 ├── utils/                 # Utility modules
-│   ├── __init__.py        # Common utility functions
+│   ├── config_utils.py    # Configuration utilities
 │   ├── config_validator.py # Configuration validation
+│   ├── constants.py       # Constants definition
 │   ├── excel_report.py    # Excel report generation
-│   └── patterns.py        # Pattern recognition (new location)
+│   ├── logger.py          # Logging configuration
+│   ├── version.py         # Version information
+│   └── __init__.py        # Package initialization
 │
-├── backtest.py            # Backtesting module
-├── backtest_utils.py      # Backtesting utilities
-├── cross_validate.py      # Cross-validation module
-├── deterministic_backtest.py # Deterministic backtesting
-├── docker-compose.yml     # Docker Compose configuration
-├── Dockerfile             # Docker configuration
-├── health_check.py        # Health check server
-├── LICENSE                # License file
-├── logger.py              # Logging configuration
 ├── main.py                # Main entry point
-├── pytest.ini             # PyTest configuration
-├── quick_validate.py      # Quick validation module
-├── README.md              # Project documentation
-├── requirements.txt       # Project dependencies
 ├── setup.py               # Package setup script
-├── utils.py               # Legacy utility functions
-├── validate_results.py    # Results validation
-└── version.py             # Version information
+├── version.py             # Version information
+├── __init__.py            # Package initialization
+├── run.bat                # Windows batch file to run the strategy
+├── setup.bat              # Windows batch file to set up the environment
+└── README.md              # Project documentation
 ```
 
 ## Contributing
@@ -358,15 +305,11 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
-
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
-* [Pandas](https://pandas.pydata.org/) - Data analysis library
-* [NumPy](https://numpy.org/) - Numerical computing library
-* [PyYAML](https://pyyaml.org/) - YAML parser and emitter
-* [pytest](https://docs.pytest.org/) - Testing framework
+- Thanks to all contributors who have helped with the development of this project
+- Special thanks to the open-source community for providing the tools and libraries used in this project

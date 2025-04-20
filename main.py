@@ -15,15 +15,15 @@ import logging
 from typing import Dict, Any, List, Tuple, Optional, Union
 
 from strategies.ema_ha import EMAHeikinAshiStrategy
-from backtest_utils import load_data, save_results
+from backtest.utils import load_data, save_results
 from utils.config_validator import validate_config
-from logger import setup_logger
+from utils.logger import setup_logger
 from utils.excel_report import create_consolidated_report
-from utils.parallel_backtest import run_parallel_backtests
-from deterministic_backtest import DeterministicBacktest
-from version import __version__
-from health_check import start_health_check_server
-import constants
+from backtest.parallel import run_parallel_backtests
+from backtest.deterministic import DeterministicBacktest
+from utils.version import __version__
+from server.health_check import start_health_check_server
+from utils import constants
 from utils.config_utils import get_config, get_config_value, get_symbol, get_trading_modes, get_candle_patterns, get_execution_settings
 
 # Set up logger
@@ -31,73 +31,87 @@ logger = setup_logger(name="main", log_level=logging.INFO)
 
 def parse_arguments() -> argparse.Namespace:
     """Parse command line arguments"""
-    parser = argparse.ArgumentParser(description='EMA Heikin Ashi Strategy')
+    parser = argparse.ArgumentParser(
+        description='EMA Heikin Ashi Strategy Backtester',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog='''
+Example usage:
+  # Run a single backtest with default settings
+  python main.py
+
+  # Run with specific trading mode
+  python main.py --mode BUY
+
+  # Compare all trading modes
+  python main.py --compare modes
+
+  # Compare all candle patterns
+  python main.py --compare patterns
+
+  # Run all combinations and generate a report
+  python main.py --all --report
+
+  # Run with deterministic mode for reproducibility
+  python main.py --deterministic
+
+  # Run cross-validation
+  python main.py --validate
+''')
+
+    # Create argument groups for better organization
+    basic_group = parser.add_argument_group('Basic Options')
+    strategy_group = parser.add_argument_group('Strategy Options')
+    analysis_group = parser.add_argument_group('Analysis Options')
+    advanced_group = parser.add_argument_group('Advanced Options')
 
     # Basic configuration options
-    parser.add_argument('--config', type=str, default=constants.DEFAULT_CONFIG_PATH,
+    basic_group.add_argument('--config', type=str, default=constants.DEFAULT_CONFIG_PATH,
                         help=f'Path to configuration file (default: {constants.DEFAULT_CONFIG_PATH})')
-
-    parser.add_argument('--no-config', action='store_true',
-                        help='Ignore config file and use only command-line arguments')
-
-    # Override options (these override settings in the config file)
-    parser.add_argument('--data', type=str,
-                        help='OVERRIDE: Path to market data file')
-
-    parser.add_argument('--symbol', type=str, default=constants.DEFAULT_SYMBOL,
-                        help=f'OVERRIDE: Trading symbol (default: {constants.DEFAULT_SYMBOL})')
-
-    parser.add_argument('--output', type=str,
-                        help='OVERRIDE: Output directory for results')
-
-    parser.add_argument('--debug', action='store_true',
-                        help='OVERRIDE: Enable debug logging')
+    basic_group.add_argument('--data', type=str,
+                        help='Path to market data file (overrides config)')
+    basic_group.add_argument('--symbol', type=str, default=constants.DEFAULT_SYMBOL,
+                        help=f'Trading symbol (default: {constants.DEFAULT_SYMBOL})')
+    basic_group.add_argument('--output', type=str,
+                        help='Output directory for results (overrides config)')
+    basic_group.add_argument('--debug', action='store_true',
+                        help='Enable debug logging')
 
     # Strategy options
-    parser.add_argument('--mode', type=str, choices=['BUY', 'SELL', 'SWING'],
+    strategy_group.add_argument('--mode', type=str, choices=['BUY', 'SELL', 'SWING'],
                         help='Trading mode: BUY, SELL, or SWING (overrides config)')
-
-    parser.add_argument('--candle-pattern', type=str,
-                        choices=['2', '3', 'None'],
-                        help='Number of consecutive candles required for pattern confirmation (2, 3, or None)')
+    strategy_group.add_argument('--pattern', type=str, choices=['2', '3', 'None'], dest='candle_pattern',
+                        help='Candle pattern: 2, 3, or None (overrides config)')
 
     # Analysis options
-    parser.add_argument('--compare', action='store_true',
-                        help='Run comparative analysis across all trading modes')
-
-    parser.add_argument('--compare-patterns', action='store_true',
-                        help='Run comparative analysis across all candle patterns')
-
-    parser.add_argument('--all-combinations', action='store_true',
-                        help='Run analysis for all combinations of trading modes and candle patterns')
-
-    parser.add_argument('--report', action='store_true',
+    analysis_group.add_argument('--compare', type=str, choices=['modes', 'patterns'],
+                        help='Run comparative analysis (modes or patterns)')
+    analysis_group.add_argument('--all', action='store_true', dest='all_combinations',
+                        help='Run all combinations of modes and patterns')
+    analysis_group.add_argument('--report', action='store_true',
                         help='Generate consolidated Excel report')
 
-    # Performance and validation options
-    parser.add_argument('--execution-mode', type=str,
-                        choices=['standard', 'deterministic', 'sequential', 'validate', 'cross-validate'],
-                        help='''
-                        OVERRIDE: Execution mode for strategy testing:
-                        - standard: Regular execution (parallel, non-deterministic)
-                        - deterministic: Deterministic execution (parallel with fixed seed)
-                        - sequential: Sequential execution (no parallelization, deterministic)
-                        - validate: Run quick validation before execution
-                        - cross-validate: Run full cross-validation
-                        ''')
+    # Execution options
+    execution_group = advanced_group.add_mutually_exclusive_group()
+    execution_group.add_argument('--deterministic', action='store_true',
+                        help='Use deterministic execution for reproducibility')
+    execution_group.add_argument('--sequential', action='store_true',
+                        help='Use sequential execution (slower but more stable)')
 
-    parser.add_argument('--seed', type=int,
-                        help='OVERRIDE: Random seed for reproducibility when using deterministic mode')
+    # Validation options
+    validation_group = advanced_group.add_mutually_exclusive_group()
+    validation_group.add_argument('--validate', action='store_true', dest='cross_validate',
+                        help='Run cross-validation to verify results')
+    validation_group.add_argument('--quick-validate', action='store_true',
+                        help='Run quick validation before execution')
 
-    # Keep these for backward compatibility but mark as deprecated
-    parser.add_argument('--deterministic', action='store_true',
-                        help=argparse.SUPPRESS)
-    parser.add_argument('--sequential', action='store_true',
-                        help=argparse.SUPPRESS)
-    parser.add_argument('--cross-validate', action='store_true',
-                        help=argparse.SUPPRESS)
-    parser.add_argument('--quick-validate', action='store_true',
-                        help=argparse.SUPPRESS)
+    advanced_group.add_argument('--seed', type=int, default=42,
+                        help='Random seed for reproducibility (default: 42)')
+
+    # Hidden options for backward compatibility
+    parser.add_argument('--no-config', action='store_true', help=argparse.SUPPRESS)
+    parser.add_argument('--compare-patterns', action='store_true', help=argparse.SUPPRESS)
+    parser.add_argument('--compare-modes', action='store_true', dest='compare', help=argparse.SUPPRESS)
+    parser.add_argument('--execution-mode', type=str, help=argparse.SUPPRESS)
 
     return parser.parse_args()
 
@@ -289,7 +303,7 @@ def run_all_combinations_analysis(config_path: Union[str, Path],
         # Run cross-validation if requested
         if cross_validate:
             logger.info("Running cross-validation to verify results...")
-            from cross_validate import run_parallel_validation
+            from backtest.cross_validate import run_parallel_validation
             run_parallel_validation(config_path, data_path, seed)
 
         # Determine if we should use parallel processing
@@ -332,37 +346,56 @@ def run_all_combinations_analysis(config_path: Union[str, Path],
         # Sort by return percentage
         sorted_results = sorted(all_combination_results, key=lambda x: x.get('return_pct', 0), reverse=True)
 
+        # Filter out results that don't have the required keys
+        valid_results = []
         for result in sorted_results:
-            print(f"{result['ema_short']}/{result['ema_long']:<6} "
-                  f"{result['trading_mode']:<6} "
-                  f"{result['pattern_length']:<8} "
-                  f"{result['total_trades']:<8} "
-                  f"{result['win_rate']*100:<8.1f}% "
-                  f"{result['profit_factor']:<15.2f} "
-                  f"Rs.{result['total_profit']:,.0f} "
-                  f"{result['return_pct']:<10.1f} "
-                  f"{result['max_drawdown_pct']:<10.1f} "
-                  f"{result.get('sharpe_ratio', 0):<8.2f}")
+            if all(key in result for key in ['ema_short', 'ema_long', 'trading_mode', 'pattern_length', 'total_trades', 'win_rate', 'profit_factor', 'total_profit', 'return_pct', 'max_drawdown_pct']):
+                valid_results.append(result)
+            else:
+                # Log the missing keys for debugging
+                missing_keys = [key for key in ['ema_short', 'ema_long', 'trading_mode', 'pattern_length', 'total_trades', 'win_rate', 'profit_factor', 'total_profit', 'return_pct', 'max_drawdown_pct'] if key not in result]
+                logger.warning(f"Skipping result with missing keys: {missing_keys}. Result: {result}")
 
-        # Find best performing combination
-        best_result = max(all_combination_results, key=lambda x: x.get('sharpe_ratio', 0) if x.get('sharpe_ratio', 0) != float('inf') else 0)
+        for result in valid_results:
+            try:
+                print(f"{result['ema_short']}/{result['ema_long']:<6} "
+                      f"{result['trading_mode']:<6} "
+                      f"{result['pattern_length']:<8} "
+                      f"{result['total_trades']:<8} "
+                      f"{result['win_rate']*100:<8.1f}% "
+                      f"{result['profit_factor']:<15.2f} "
+                      f"Rs.{result['total_profit']:,.0f} "
+                      f"{result['return_pct']:<10.1f} "
+                      f"{result['max_drawdown_pct']:<10.1f} "
+                      f"{result.get('sharpe_ratio', 0):<8.2f}")
+            except Exception as e:
+                logger.warning(f"Error printing result: {e}. Result: {result}")
 
-        print("\nBEST PERFORMING COMBINATION (by Sharpe Ratio)")
-        print("=" * 60)
-        print(f"EMA Pair: {best_result['ema_short']}/{best_result['ema_long']}")
-        print(f"Trading Mode: {best_result['trading_mode']}")
-        pattern = best_result['pattern_length']
-        if pattern == 'None':
-            print(f"Candle Pattern: No Pattern")
+        # Find best performing combination from valid results
+        if valid_results:
+            try:
+                best_result = max(valid_results, key=lambda x: x.get('sharpe_ratio', 0) if x.get('sharpe_ratio', 0) != float('inf') else 0)
+
+                print("\nBEST PERFORMING COMBINATION (by Sharpe Ratio)")
+                print("=" * 60)
+                print(f"EMA Pair: {best_result['ema_short']}/{best_result['ema_long']}")
+                print(f"Trading Mode: {best_result['trading_mode']}")
+                pattern = best_result['pattern_length']
+                if pattern == 'None':
+                    print(f"Candle Pattern: No Pattern")
+                else:
+                    print(f"Candle Pattern: {pattern}-candle")
+                print(f"Total Trades: {best_result['total_trades']}")
+                print(f"Win Rate: {best_result['win_rate']*100:.1f}%")
+                print(f"Profit Factor: {best_result['profit_factor']:.2f}")
+                print(f"Total Profit: Rs.{best_result['total_profit']:,.0f}")
+                print(f"Return: {best_result['return_pct']:.1f}%")
+                print(f"Max Drawdown: {best_result['max_drawdown_pct']:.1f}%")
+                print(f"Sharpe Ratio: {best_result.get('sharpe_ratio', 0):.2f}")
+            except Exception as e:
+                logger.error(f"Error finding best performing combination: {e}")
         else:
-            print(f"Candle Pattern: {pattern}-candle")
-        print(f"Total Trades: {best_result['total_trades']}")
-        print(f"Win Rate: {best_result['win_rate']*100:.1f}%")
-        print(f"Profit Factor: {best_result['profit_factor']:.2f}")
-        print(f"Total Profit: Rs.{best_result['total_profit']:,.0f}")
-        print(f"Return: {best_result['return_pct']:.1f}%")
-        print(f"Max Drawdown: {best_result['max_drawdown_pct']:.1f}%")
-        print(f"Sharpe Ratio: {best_result.get('sharpe_ratio', 0):.2f}")
+            logger.warning("No valid results found to determine best performing combination")
 
         return all_combination_results, all_combination_trades
 
@@ -503,7 +536,8 @@ def run_comparative_analysis(config_path: Union[str, Path],
                 data_path=data_path,
                 symbol=symbol,
                 output_dir=output_dir,
-                mode=mode
+                mode=mode,
+                candle_pattern=None
             )
 
             # Store results
@@ -582,72 +616,45 @@ def main() -> int:
         logger.setLevel(logging.DEBUG)
 
     try:
-        # Load configuration if not using --no-config
-        if not args.no_config:
-            config = get_config(args.config)
-        else:
-            # Create a minimal config with default values
-            config = {
-                'execution': {
-                    'mode': constants.DEFAULT_EXECUTION_MODE,
-                    'seed': constants.DEFAULT_SEED,
-                    'health_port': constants.DEFAULT_HEALTH_PORT
-                }
+        # Load configuration
+        config = get_config(args.config) if not args.no_config else {
+            'execution': {
+                'mode': constants.DEFAULT_EXECUTION_MODE,
+                'seed': constants.DEFAULT_SEED,
+                'health_port': constants.DEFAULT_HEALTH_PORT
             }
+        }
 
-        # Handle execution mode
-        # Priority: 1. Command-line flags (backward compatibility), 2. --execution-mode, 3. Config file
+        # Set execution parameters
+        deterministic = args.deterministic
+        sequential = args.sequential
+        seed = args.seed
+
+        # Log the execution mode
+        execution_type = "deterministic" if deterministic else "standard"
+        execution_method = "sequential" if sequential else "parallel"
+        logger.info(f"Execution mode: {execution_type} {execution_method} (seed={seed})")
+
+        # Handle validation modes
         if args.quick_validate:
-            execution_mode = 'validate'
-        elif args.cross_validate and not args.all_combinations:
-            execution_mode = 'cross-validate'
-        elif args.execution_mode:
-            execution_mode = args.execution_mode
-        elif 'execution' in config and 'mode' in config['execution']:
-            execution_mode = config['execution']['mode']
-        else:
-            execution_mode = constants.DEFAULT_EXECUTION_MODE
-
-        # Handle seed
-        # Priority: 1. Command-line --seed, 2. Config file, 3. Default from constants
-        if args.seed is not None:
-            seed = args.seed
-        elif 'execution' in config and 'seed' in config['execution']:
-            seed = config['execution']['seed']
-        else:
-            seed = constants.DEFAULT_SEED
-
-        # Set deterministic and sequential flags based on execution mode
-        deterministic = args.deterministic or execution_mode in ['deterministic', 'sequential', 'validate', 'cross-validate']
-        sequential = args.sequential or execution_mode in ['sequential']
-
-        # Run standalone validation if requested
-        if execution_mode == 'validate':
             logger.info("Running quick validation...")
-            from quick_validate import run_quick_validation
+            from backtest.quick_validate import run_quick_validation
             run_quick_validation(args.config, args.data, seed)
             logger.info("Quick validation completed.")
             return 0
 
-        # Run standalone cross-validation if requested
-        if execution_mode == 'cross-validate':
+        if args.cross_validate:
             logger.info("Running full cross-validation...")
-            from cross_validate import run_parallel_validation
+            from backtest.cross_validate import run_parallel_validation
             run_parallel_validation(args.config, args.data, seed)
             logger.info("Cross-validation completed.")
             return 0
 
-        # Log the execution mode
-        logger.info(f"Execution mode: {execution_mode} (deterministic={deterministic}, sequential={sequential}, seed={seed})")
-
-        # Check which analysis mode is requested
-        if sum([args.compare, args.compare_patterns, args.all_combinations]) > 1:
-            logger.error("Cannot use multiple comparison flags together. Please choose one: --compare, --compare-patterns, or --all-combinations.")
-            return 1
+        # Determine analysis mode based on arguments
+        flat_results = []
 
         # Run all combinations analysis
         if args.all_combinations:
-            # Run all combinations analysis
             all_results, _ = run_all_combinations_analysis(
                 config_path=args.config,
                 data_path=args.data,
@@ -655,47 +662,45 @@ def main() -> int:
                 deterministic=deterministic,
                 sequential=sequential,
                 seed=seed,
-                cross_validate=(execution_mode == 'validate')
+                cross_validate=False
             )
-
-            # All results are already flattened
             flat_results = all_results
 
+        # Run comparative analysis
         elif args.compare:
-            # Run trading mode comparison
-            all_results, _ = run_comparative_analysis(
-                config_path=args.config,
-                data_path=args.data,
-                symbol=args.symbol,
-                output_dir=args.output
-            )
+            if args.compare == 'modes':
+                # Compare trading modes
+                all_results, _ = run_comparative_analysis(
+                    config_path=args.config,
+                    data_path=args.data,
+                    symbol=args.symbol,
+                    output_dir=args.output
+                )
+                # Flatten results
+                flat_results = []
+                for mode, results in all_results.items():
+                    for result in results:
+                        result['trading_mode'] = mode
+                        flat_results.append(result)
 
-            # Flatten results for report
-            flat_results = []
-            for mode, results in all_results.items():
-                for result in results:
-                    result['trading_mode'] = mode  # Ensure trading mode is set
-                    flat_results.append(result)
+            elif args.compare == 'patterns':
+                # Compare candle patterns
+                all_results, _ = run_comparative_patterns_analysis(
+                    config_path=args.config,
+                    data_path=args.data,
+                    symbol=args.symbol,
+                    output_dir=args.output,
+                    mode=args.mode
+                )
+                # Flatten results
+                flat_results = []
+                for pattern, results in all_results.items():
+                    for result in results:
+                        result['pattern_length'] = pattern
+                        flat_results.append(result)
 
-        elif args.compare_patterns:
-            # Run candle pattern comparison
-            all_results, _ = run_comparative_patterns_analysis(
-                config_path=args.config,
-                data_path=args.data,
-                symbol=args.symbol,
-                output_dir=args.output,
-                mode=args.mode
-            )
-
-            # Flatten results for report
-            flat_results = []
-            for pattern, results in all_results.items():
-                for result in results:
-                    result['pattern_length'] = pattern  # Ensure pattern length is set
-                    flat_results.append(result)
-
+        # Run single strategy
         else:
-            # Run with specified or default mode
             flat_results, _ = run_strategy(
                 config_path=args.config,
                 data_path=args.data,
@@ -711,11 +716,9 @@ def main() -> int:
             report_file = create_consolidated_report(flat_results, config)
             logger.info(f"Consolidated Excel report generated: {report_file}")
 
-
         return 0
     except Exception as e:
         logger.error(f"Error: {e}")
-
         return 1
 
 if __name__ == "__main__":

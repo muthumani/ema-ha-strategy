@@ -9,10 +9,10 @@ import pandas as pd
 import numpy as np
 from typing import Dict, Any, List, Tuple
 import logging
-from logger import setup_logger
+from utils.logger import setup_logger
 
 # Set up logger
-logger = setup_logger(name="utils.patterns", log_level=logging.INFO)
+logger = setup_logger(name="patterns.patterns", log_level=logging.INFO)
 
 def detect_consecutive_candles(df: pd.DataFrame, pattern_type: str, length: int = 2) -> pd.Series:
     """

@@ -10,7 +10,7 @@ import yaml
 from pathlib import Path
 from datetime import datetime
 
-from backtest_utils import load_config, load_data, save_results, calculate_performance_metrics
+from backtest.utils import load_config, load_data, save_results, calculate_performance_metrics
 
 def test_load_config():
     """Test loading configuration from a YAML file"""

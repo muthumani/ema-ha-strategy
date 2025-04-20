@@ -100,7 +100,7 @@ def test_validate_config_file_functionality(tmp_path):
     # Create a simple validate_config_file function for testing
     def validate_config_file(config_path):
         try:
-            from backtest_utils import load_config
+            from backtest.utils import load_config
             config = load_config(config_path)
             return validate_config(config)
         except Exception:

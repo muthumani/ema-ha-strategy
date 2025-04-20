@@ -15,7 +15,8 @@ from datetime import datetime
 import logging
 from typing import Dict, Any, Optional, List, Tuple
 
-from logger import setup_logger
+from utils.logger import setup_logger
+from utils.version import __version__
 
 # Set up logger
 logger = setup_logger(name="health_check", log_level=logging.INFO)
@@ -34,7 +35,7 @@ class HealthStatus:
             "disk_space": True
         }
         self.messages = []
-        self.version = "1.0.0"  # Should match version.py
+        self.version = __version__
     
     def check_health(self) -> bool:
         """

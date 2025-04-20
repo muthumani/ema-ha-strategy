@@ -60,8 +60,30 @@ Enhancement suggestions are tracked as GitHub issues. Create an issue and provid
 * Include screenshots and animated GIFs in your pull request whenever possible.
 * Follow the Python style guide.
 * Include unit tests for new features or bug fixes.
+* Ensure all tests pass before submitting your PR.
+* Maintain or improve code coverage (aim for >95% coverage).
+* Run cross-validation for any changes to the backtesting engine.
 * End all files with a newline.
 * Avoid platform-dependent code.
+
+### Testing Guidelines
+
+* Write unit tests for all new code.
+* Use pytest fixtures for common test setup.
+* Mock external dependencies in unit tests.
+* Write integration tests for complex interactions.
+* Run the full test suite before submitting a PR:
+  ```bash
+  pytest
+  ```
+* Check code coverage to ensure your changes are well-tested:
+  ```bash
+  pytest --cov=. --cov-report=term-missing
+  ```
+* For changes to the backtesting engine, run cross-validation to ensure deterministic results:
+  ```bash
+  python main.py --validate
+  ```
 
 ## Styleguides
 

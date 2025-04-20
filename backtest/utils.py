@@ -1,3 +1,10 @@
+"""
+Backtesting utilities module.
+
+This module provides utility functions for backtesting, including loading data,
+saving results, and calculating performance metrics.
+"""
+
 import pandas as pd
 import numpy as np
 import yaml
@@ -7,10 +14,10 @@ import os
 from datetime import datetime
 from typing import Dict, List, Any, Union, Optional, Tuple
 import logging
-from logger import setup_logger
+from utils.logger import setup_logger
 
 # Set up logger
-logger = setup_logger(name="backtest_utils", log_level=logging.INFO)
+logger = setup_logger(name="backtest.utils", log_level=logging.INFO)
 
 def load_config(config_path: str = 'config/config.yaml') -> Dict[str, Any]:
     """
