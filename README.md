@@ -1,8 +1,8 @@
 # EMA Heikin Ashi Strategy
 
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/YOUR_USERNAME/ema-ha-strategy)
-![GitHub](https://img.shields.io/github/license/YOUR_USERNAME/ema-ha-strategy)
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/YOUR_USERNAME/ema-ha-strategy/Python%20Tests)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/muthumani/ema-ha-strategy)
+![GitHub](https://img.shields.io/github/license/muthumani/ema-ha-strategy)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/muthumani/ema-ha-strategy/Python%20Tests)
 ![Code Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen)
 
 A comprehensive backtesting and trading system for the EMA Heikin Ashi strategy, designed for NIFTY Index 50 options trading.
@@ -38,7 +38,7 @@ A comprehensive backtesting and trading system for the EMA Heikin Ashi strategy,
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/ema-ha-strategy.git
+git clone https://github.com/muthumani/ema-ha-strategy.git
 cd ema-ha-strategy
 
 # Install dependencies
@@ -303,7 +303,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
 3. Commit your changes (`git commit -m 'Add some amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+5. Open a Pull Request at https://github.com/muthumani/ema-ha-strategy/compare/master?expand=1
 
 ## License
 
