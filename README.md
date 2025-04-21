@@ -309,6 +309,50 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+## Frequently Asked Questions (FAQ)
+
+### How do I get started with this project?
+1. **Installation**: Follow the [Installation](#installation) section to set up the project.
+2. **Configuration**: Review and modify the `config/config.yaml` file to set your desired parameters.
+3. **Run**: Execute the project using the [Quick Start](#quick-start) instructions.
+4. **Analyze Results**: Check the generated reports in the `data/reports` directory.
+
+### What is the main entry point of the code?
+The main entry point is `main.py` in the root directory. This file handles command-line arguments and initiates the backtesting process.
+
+### How do I run a backtest?
+You can run a backtest using the following command:
+```bash
+python main.py
+```
+Or if you're on Windows, you can use the provided batch file:
+```bash
+run.bat
+```
+
+### Where can I find step-by-step guides?
+- **User Guide**: Check the `docs/user_guide` directory for detailed usage instructions.
+- **Development Guide**: The `docs/development` directory contains guides for developers.
+- **Acceptance Testing**: The `acceptance_testing/README.md` file provides information on running acceptance tests.
+- **Running Combinations**: See `docs/running_combinations.md` for instructions on running multiple strategy combinations.
+
+### How do I interpret the results?
+Results are provided in Excel reports located in the `data/reports` directory. These reports include:
+- Overview of the strategy performance
+- Detailed metrics for each EMA pair
+- Comparison of different trading modes and candle patterns
+- Performance charts and visualizations
+
+### How do I customize the strategy?
+You can customize the strategy by modifying the following parameters in `config/config.yaml`:
+- EMA pairs (e.g., [8, 21], [13, 34], [21, 55])
+- Trading modes (BUY, SELL, SWING)
+- Heikin Ashi pattern settings (2-candle, 3-candle, or no pattern)
+- Initial capital and other backtest parameters
+
+### How do I contribute to this project?
+See the [Contributing](#contributing) section for guidelines on how to contribute to this project.
+
 ## Acknowledgments
 
 - Thanks to all contributors who have helped with the development of this project
