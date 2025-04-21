@@ -75,6 +75,7 @@ data/test_results/*
 !data/results/.gitkeep
 !data/reports/.gitkeep
 !data/test_results/.gitkeep
+!data/market_data/NIFTY_1min.csv
 
 # Temporary files created during development
 github_*
