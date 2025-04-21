@@ -94,7 +94,7 @@ The system is configured using YAML files. The default configuration file is `co
 # Example configuration
 strategy:
   ema_pairs:
-    - [8, 21]
+    - [9, 21]
     - [13, 34]
     - [21, 55]
   trading:
